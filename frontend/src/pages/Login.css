@@ -1,0 +1,150 @@
+.auth-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.auth-page .landing-navbar {
+  background: var(--pink-bg);
+  padding: 12px 32px;
+}
+
+.auth-page .landing-navbar .navbar-logo {
+  background: white;
+  padding: 8px 16px;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: 16px;
+  color: var(--pink);
+}
+
+.auth-content {
+  flex: 1;
+  display: flex;
+}
+
+.auth-left {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  border-right: 1px solid #eee;
+  position: relative;
+}
+
+.back-arrow {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  font-size: 24px;
+  cursor: pointer;
+  color: var(--dark);
+  background: none;
+  border: none;
+  padding: 8px;
+}
+
+.back-arrow:hover {
+  color: var(--pink);
+}
+
+.auth-left img {
+  max-width: 360px;
+  width: 100%;
+}
+
+.auth-left h2 {
+  font-size: 26px;
+  margin-top: 24px;
+  text-align: center;
+}
+
+.auth-left p {
+  color: var(--gray);
+  margin-top: 8px;
+  text-align: center;
+}
+
+.auth-right {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 40px;
+}
+
+.auth-form {
+  border: 3px solid var(--pink);
+  border-radius: 20px;
+  padding: 40px 50px;
+  width: 100%;
+  max-width: 480px;
+}
+
+.auth-form h2 {
+  font-size: 32px;
+  margin-bottom: 8px;
+}
+
+.auth-form .subtitle {
+  color: var(--gray);
+  font-size: 14px;
+  margin-bottom: 30px;
+}
+
+.auth-form .role-label {
+  font-size: 22px;
+  font-weight: 800;
+  margin-bottom: 24px;
+}
+
+.auth-form input {
+  width: 100%;
+  padding: 12px 0;
+  border: none;
+  border-bottom: 2px solid var(--pink-light);
+  font-size: 15px;
+  margin-bottom: 16px;
+  background: transparent;
+  transition: border-color var(--transition);
+}
+
+.auth-form input:focus {
+  border-bottom-color: var(--pink);
+}
+
+.auth-form input::placeholder {
+  color: var(--gray);
+}
+
+.auth-form .btn-pink {
+  width: 100%;
+  margin-top: 10px;
+  padding: 14px;
+  font-size: 16px;
+}
+
+.auth-form .switch-link {
+  text-align: center;
+  margin-top: 16px;
+  font-size: 14px;
+}
+
+.auth-form .switch-link a {
+  color: var(--pink);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.auth-error {
+  color: var(--red);
+  font-size: 13px;
+  margin-bottom: 8px;
+  font-weight: 600;
+}

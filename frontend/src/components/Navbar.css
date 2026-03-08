@@ -1,0 +1,145 @@
+.navbar {
+  background: var(--pink-bg);
+  padding: 12px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.navbar-logo {
+  background: white;
+  padding: 8px 16px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: 16px;
+  color: var(--pink);
+  transition: all var(--transition);
+}
+
+.navbar-logo:hover {
+  transform: scale(1.02);
+}
+
+.navbar-logo .arrow {
+  font-size: 18px;
+}
+
+.navbar-search {
+  flex: 1;
+  max-width: 550px;
+  margin: 0 32px;
+  position: relative;
+}
+
+.navbar-search input {
+  width: 100%;
+  padding: 10px 44px 10px 16px;
+  border-radius: 8px;
+  border: none;
+  font-size: 14px;
+  background: white;
+}
+
+.navbar-search .search-icon {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 18px;
+  color: var(--gray);
+  cursor: pointer;
+}
+
+.search-suggestions {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: white;
+  border-radius: 0 0 8px 8px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+  z-index: 200;
+}
+
+.search-suggestions div {
+  padding: 10px 16px;
+  cursor: pointer;
+  font-size: 14px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.search-suggestions div:hover {
+  background: var(--pink-pale);
+}
+
+.navbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.navbar-actions button {
+  background: none;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--dark);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.navbar-actions button:hover {
+  color: var(--pink);
+}
+
+.cart-btn {
+  position: relative;
+}
+
+.cart-badge {
+  position: absolute;
+  top: -8px;
+  right: -10px;
+  background: var(--pink);
+  color: white;
+  font-size: 11px;
+  font-weight: 800;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pharma-subnav {
+  background: var(--pink-pale);
+  display: flex;
+  justify-content: center;
+  gap: 60px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--pink-light);
+}
+
+.pharma-subnav a {
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--dark);
+  padding-bottom: 4px;
+  border-bottom: 3px solid transparent;
+  transition: all var(--transition);
+}
+
+.pharma-subnav a:hover,
+.pharma-subnav a.active {
+  color: var(--pink);
+  border-bottom-color: var(--pink);
+}

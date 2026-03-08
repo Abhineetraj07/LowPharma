@@ -1,0 +1,137 @@
+.home { animation: fadeIn 0.3s ease; }
+
+.category-nav {
+  display: flex;
+  gap: 0;
+  padding: 0 32px;
+  border-bottom: 1px solid #eee;
+  overflow-x: auto;
+}
+
+.category-nav button {
+  padding: 14px 24px;
+  background: none;
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--dark);
+  border-bottom: 3px solid transparent;
+  white-space: nowrap;
+}
+
+.category-nav button:hover,
+.category-nav button.active {
+  color: var(--pink);
+  border-bottom-color: var(--pink);
+}
+
+.hero-banners {
+  display: flex;
+  gap: 16px;
+  padding: 24px 32px;
+}
+
+.hero-banner {
+  flex: 1;
+  height: 220px;
+  border-radius: 12px;
+  overflow: hidden;
+  position: relative;
+  background: linear-gradient(135deg, #b3e5fc 0%, #e1f5fe 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hero-banner.promo {
+  background: linear-gradient(135deg, #1a237e 0%, #283593 100%);
+  color: white;
+  padding: 30px;
+  flex-direction: column;
+  align-items: flex-end;
+  text-align: right;
+}
+
+.hero-banner.promo h2 {
+  font-size: 32px;
+}
+
+.hero-banner.promo p {
+  font-size: 16px;
+  margin: 8px 0 16px;
+  opacity: 0.9;
+}
+
+.hero-banner.promo button {
+  background: var(--orange);
+  color: var(--dark);
+  padding: 10px 24px;
+  border-radius: 4px;
+  font-weight: 700;
+}
+
+.hero-banner.concept {
+  padding: 20px;
+}
+
+.hero-banner.concept img {
+  max-height: 180px;
+}
+
+.bestsellers {
+  padding: 24px 32px;
+}
+
+.bestsellers h3 {
+  font-size: 20px;
+  margin-bottom: 16px;
+}
+
+.bestsellers-row {
+  display: flex;
+  gap: 20px;
+  overflow-x: auto;
+  padding-bottom: 16px;
+}
+
+.med-card {
+  min-width: 150px;
+  max-width: 150px;
+  background: white;
+  border-radius: 12px;
+  padding: 12px;
+  box-shadow: var(--shadow);
+  cursor: pointer;
+  transition: all var(--transition);
+  text-align: center;
+}
+
+.med-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 32px rgba(255, 27, 141, 0.2);
+}
+
+.med-card .med-emoji {
+  font-size: 48px;
+  margin-bottom: 8px;
+}
+
+.med-card h4 {
+  font-size: 13px;
+  font-family: 'Nunito', sans-serif;
+  font-weight: 700;
+  margin-bottom: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.med-card .med-price {
+  color: var(--pink);
+  font-weight: 800;
+  font-size: 15px;
+}
+
+.med-card .med-brand {
+  color: var(--gray);
+  font-size: 11px;
+}

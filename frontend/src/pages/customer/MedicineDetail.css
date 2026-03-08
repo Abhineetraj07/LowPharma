@@ -1,0 +1,88 @@
+.medicine-detail {
+  animation: fadeIn 0.3s ease;
+  padding: 32px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.detail-back {
+  font-size: 14px;
+  color: var(--gray);
+  cursor: pointer;
+  margin-bottom: 24px;
+  display: inline-block;
+  font-weight: 600;
+}
+
+.detail-back:hover { color: var(--pink); }
+
+.detail-content {
+  display: flex;
+  gap: 40px;
+}
+
+.detail-image {
+  font-size: 120px;
+  min-width: 200px;
+  text-align: center;
+  background: var(--pink-pale);
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+}
+
+.detail-info { flex: 1; }
+
+.detail-info h1 {
+  font-size: 28px;
+  margin-bottom: 4px;
+}
+
+.detail-info .detail-brand {
+  color: var(--gray);
+  font-size: 15px;
+  margin-bottom: 8px;
+}
+
+.detail-info .detail-category {
+  display: inline-block;
+  background: var(--pink-pale);
+  color: var(--pink);
+  padding: 4px 14px;
+  border-radius: 50px;
+  font-size: 13px;
+  font-weight: 700;
+  margin-bottom: 20px;
+}
+
+.detail-info .detail-price {
+  font-size: 32px;
+  font-weight: 800;
+  margin-bottom: 20px;
+}
+
+.detail-meta {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.detail-meta div {
+  font-size: 14px;
+}
+
+.detail-meta span {
+  color: var(--gray);
+  display: block;
+  font-size: 12px;
+}
+
+.detail-stock {
+  font-weight: 700;
+}
+
+.detail-stock.low { color: var(--red); }
+.detail-stock.ok { color: var(--green); }

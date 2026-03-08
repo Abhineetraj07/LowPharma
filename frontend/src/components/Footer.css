@@ -1,0 +1,40 @@
+.footer {
+  background: var(--pink-bg);
+  padding: 20px 32px;
+  display: flex;
+  align-items: center;
+  gap: 40px;
+  margin-top: auto;
+}
+
+.footer-logo {
+  background: white;
+  padding: 8px 16px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: 14px;
+  color: var(--pink);
+}
+
+.footer-logo .arrow {
+  font-size: 16px;
+}
+
+.footer-links {
+  display: flex;
+  gap: 32px;
+}
+
+.footer-links a {
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--dark);
+}
+
+.footer-links a:hover {
+  color: var(--pink);
+}

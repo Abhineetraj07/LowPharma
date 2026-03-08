@@ -1,0 +1,93 @@
+.thankyou-page {
+  animation: fadeIn 0.3s ease;
+  text-align: center;
+  padding: 60px 32px;
+}
+
+.thankyou-banner {
+  margin-bottom: 20px;
+}
+
+.thankyou-banner .thankyou-icon {
+  font-size: 80px;
+}
+
+.thankyou-text {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 40px;
+  margin-bottom: 50px;
+}
+
+.thankyou-text h1 {
+  font-size: 48px;
+  color: var(--pink-light);
+  font-weight: 900;
+  letter-spacing: 2px;
+}
+
+.tracker {
+  max-width: 800px;
+  margin: 0 auto 40px;
+}
+
+.tracker h3 {
+  text-align: left;
+  font-size: 18px;
+  margin-bottom: 24px;
+}
+
+.tracker-steps {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+}
+
+.tracker-steps::before {
+  content: '';
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  right: 12px;
+  height: 3px;
+  background: #ddd;
+}
+
+.tracker-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  position: relative;
+  z-index: 1;
+}
+
+.tracker-dot {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #ddd;
+}
+
+.tracker-dot.active {
+  background: var(--pink);
+}
+
+.tracker-step span {
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.tracker-line {
+  flex: 1;
+  height: 3px;
+  background: #ddd;
+  position: relative;
+  z-index: 0;
+}
+
+.tracker-line.active {
+  background: var(--pink);
+}

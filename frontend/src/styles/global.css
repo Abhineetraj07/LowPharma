@@ -1,0 +1,121 @@
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800;900&family=Nunito:wght@400;600;700;800&display=swap');
+
+:root {
+  --pink: #FF1B8D;
+  --pink-light: #FFB3D9;
+  --pink-pale: #FFF0F7;
+  --pink-bg: #FFD6EC;
+  --dark: #1A1A2E;
+  --gray: #6B7280;
+  --green: #10B981;
+  --red: #EF4444;
+  --orange: #F59E0B;
+  --blue: #3B82F6;
+  --white: #FFFFFF;
+  --shadow: 0 4px 24px rgba(255, 27, 141, 0.12);
+  --transition: 0.18s ease;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Nunito', sans-serif;
+  color: var(--dark);
+  background: var(--white);
+  min-height: 100vh;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+  border: none;
+  outline: none;
+  font-family: 'Nunito', sans-serif;
+  transition: all var(--transition);
+}
+
+input, select {
+  font-family: 'Nunito', sans-serif;
+  outline: none;
+}
+
+.btn-pink {
+  background: var(--pink);
+  color: white;
+  padding: 12px 40px;
+  border-radius: 50px;
+  font-size: 16px;
+  font-weight: 700;
+  border: none;
+  transition: all var(--transition);
+}
+
+.btn-pink:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow);
+  opacity: 0.95;
+}
+
+.btn-pink:disabled {
+  background: var(--pink-light);
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.btn-pink-outline {
+  background: transparent;
+  color: var(--pink);
+  padding: 10px 30px;
+  border-radius: 50px;
+  font-size: 14px;
+  font-weight: 700;
+  border: 2px solid var(--pink);
+  transition: all var(--transition);
+}
+
+.btn-pink-outline:hover {
+  background: var(--pink-pale);
+  transform: translateY(-2px);
+}
+
+.page-wrapper {
+  min-height: calc(100vh - 160px);
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--pink-pale);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--pink-light);
+  border-radius: 3px;
+}
