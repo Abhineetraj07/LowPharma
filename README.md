@@ -130,7 +130,8 @@ FastAPI auto-generates interactive API docs at **http://localhost:8000/docs**
 
 ## Team
 
-- Gythhri Devi
+- Gayathri Devi
+- Aishani Mishra
 - Abhineet Raj
 
 ## License
