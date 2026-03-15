@@ -9,6 +9,10 @@ import Footer from './components/Footer';
 import Landing from './pages/Landing';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
+import ForgotPassword from './pages/ForgotPassword';
+import About from './pages/About';
+import Contact from './pages/Contact';
+import NeedHelp from './pages/NeedHelp';
 
 import Home from './pages/customer/Home';
 import SearchResults from './pages/customer/SearchResults';
@@ -53,6 +57,10 @@ function AppRoutes() {
       <Route path="/" element={user ? <Navigate to={user.role === 'customer' ? '/home' : '/pharmacist/inventory'} /> : <Landing />} />
       <Route path="/login/:role" element={<Login />} />
       <Route path="/signup/:role" element={<Signup />} />
+      <Route path="/forgot-password/:role" element={<ForgotPassword />} />
+      <Route path="/about" element={<About />} />
+      <Route path="/contact" element={<Contact />} />
+      <Route path="/need-help" element={<NeedHelp />} />
 
       {/* Customer */}
       <Route element={<ProtectedLayout allowedRole="customer" />}>

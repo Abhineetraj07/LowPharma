@@ -61,6 +61,11 @@ class ChangePassword(BaseModel):
     new_password: str
 
 
+class ForgotPassword(BaseModel):
+    username: str
+    new_password: str
+
+
 class AddressCreate(BaseModel):
     name: str
     mobile: str = ""
@@ -105,6 +110,7 @@ class MedicineCreate(BaseModel):
     mrp: float = 0.0
     cost_per_unit: float = 0.0
     category: str = ""
+    image_url: str = ""
     requires_prescription: int = 0
 
 
@@ -120,6 +126,11 @@ class MedicineResponse(BaseModel):
     category: str
     image_url: str
     requires_prescription: int
+    pharmacist_id: Optional[int] = None
+    pharmacy_name: Optional[str] = ""
+    pharmacy_address: Optional[str] = ""
+    pharmacy_hours: Optional[str] = ""
+    pharmacy_contact: Optional[str] = ""
 
     class Config:
         from_attributes = True
@@ -139,6 +150,7 @@ class OrderItemResponse(BaseModel):
     medicine_category: str
     quantity: int
     price: float
+    pharmacy_name: Optional[str] = ""
 
     class Config:
         from_attributes = True
@@ -174,8 +186,11 @@ class PrescriptionResponse(BaseModel):
     filename: str
     original_name: str
     doctor_name: str
+    patient_name: str = ""
     status: str
     uploaded_at: datetime
+    is_expired: bool = False
+    days_remaining: int = 15
 
     class Config:
         from_attributes = True

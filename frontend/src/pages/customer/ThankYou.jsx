@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import './ThankYou.css';
 
-const STEPS = ['Placed', 'Approved', 'Dispatched', 'Out for Delivery', 'Delivered'];
+const STEPS = ['Placed', 'Processing', 'Shipped', 'Out for Delivery', 'Delivered'];
 
 export default function ThankYou() {
   const navigate = useNavigate();

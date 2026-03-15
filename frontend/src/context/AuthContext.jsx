@@ -4,8 +4,30 @@ const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(() => {
-    const saved = localStorage.getItem('user');
-    return saved ? JSON.parse(saved) : null;
+    // If this is a fresh browser session (tab/window was closed or server restarted),
+    // clear auth and send user to landing page
+    if (!sessionStorage.getItem('session_active')) {
+      localStorage.removeItem('user');
+      localStorage.removeItem('token');
+      sessionStorage.setItem('session_active', 'true');
+      return null;
+    }
+
+    try {
+      const saved = localStorage.getItem('user');
+      if (!saved) return null;
+      const parsed = JSON.parse(saved);
+      if (!parsed.access_token || !parsed.role) {
+        localStorage.removeItem('user');
+        localStorage.removeItem('token');
+        return null;
+      }
+      return parsed;
+    } catch {
+      localStorage.removeItem('user');
+      localStorage.removeItem('token');
+      return null;
+    }
   });
 
   const login = (userData) => {

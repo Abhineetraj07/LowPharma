@@ -111,3 +111,71 @@
   font-size: 14px;
   margin-top: 8px;
 }
+
+@media (max-width: 768px) {
+  .landing-content {
+    flex-direction: column;
+    gap: 0;
+    padding: 0;
+  }
+  .landing-left {
+    border-right: none;
+    border-bottom: 1px solid #eee;
+    padding: 24px;
+  }
+  .landing-left img {
+    max-width: 200px;
+  }
+  .landing-left h2 {
+    font-size: 22px;
+  }
+  .landing-right {
+    padding: 24px;
+  }
+  .role-card {
+    padding: 24px;
+  }
+  .role-card h2 {
+    font-size: 26px;
+    margin-bottom: 20px;
+  }
+  .role-options {
+    gap: 24px;
+  }
+  .role-option img {
+    width: 100px;
+    height: 100px;
+  }
+}
+
+@media (max-width: 480px) {
+  .landing-left {
+    padding: 16px;
+  }
+  .landing-left img {
+    max-width: 150px;
+  }
+  .landing-left h2 {
+    font-size: 18px;
+  }
+  .landing-right {
+    padding: 16px;
+  }
+  .role-card {
+    padding: 20px;
+    border-width: 2px;
+  }
+  .role-card h2 {
+    font-size: 22px;
+  }
+  .role-options {
+    gap: 16px;
+  }
+  .role-option img {
+    width: 80px;
+    height: 80px;
+  }
+  .role-option p {
+    font-size: 14px;
+  }
+}

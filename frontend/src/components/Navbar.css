@@ -143,3 +143,49 @@
   color: var(--pink);
   border-bottom-color: var(--pink);
 }
+
+@media (max-width: 768px) {
+  .navbar {
+    padding: 10px 16px;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .navbar-logo {
+    font-size: 14px;
+    padding: 6px 12px;
+  }
+  .navbar-search {
+    order: 3;
+    max-width: 100%;
+    margin: 0;
+    flex-basis: 100%;
+  }
+  .navbar-actions {
+    gap: 12px;
+  }
+  .navbar-actions button {
+    font-size: 12px;
+  }
+  .pharma-subnav {
+    gap: 20px;
+    padding: 10px 16px;
+    overflow-x: auto;
+  }
+  .pharma-subnav a {
+    font-size: 13px;
+    white-space: nowrap;
+  }
+}
+
+@media (max-width: 480px) {
+  .navbar-logo {
+    font-size: 12px;
+    padding: 5px 10px;
+  }
+  .navbar-actions {
+    gap: 8px;
+  }
+  .cart-btn {
+    font-size: 12px;
+  }
+}

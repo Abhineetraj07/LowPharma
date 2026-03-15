@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Line, Pie, Bar } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, ArcElement, BarElement, Title, Tooltip, Legend } from 'chart.js';
 import API from '../../api/axios';
@@ -7,12 +8,16 @@ import './Pharmacist.css';
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, ArcElement, BarElement, Title, Tooltip, Legend);
 
 export default function Dashboard() {
+  const navigate = useNavigate();
   const [data, setData] = useState(null);
   const [fromDate, setFromDate] = useState('');
   const [toDate, setToDate] = useState('');
 
   const fetchDashboard = () => {
-    API.get('/api/pharmacist/dashboard').then(res => setData(res.data));
+    const params = {};
+    if (fromDate) params.from_date = fromDate;
+    if (toDate) params.to_date = toDate;
+    API.get('/api/pharmacist/dashboard', { params }).then(res => setData(res.data));
   };
 
   useEffect(() => { fetchDashboard(); }, []);
@@ -48,13 +53,11 @@ export default function Dashboard() {
     }],
   };
 
-  const handleDownloadCSV = () => {
-    window.open('http://localhost:8000/api/pharmacist/download-csv', '_blank');
-  };
-
   return (
     <div className="pharma-page">
-      <p className="cart-breadcrumb" style={{ marginBottom: 8 }}>Home &gt; Dashboard</p>
+      <p className="cart-breadcrumb" style={{ marginBottom: 8 }}>
+        <a onClick={() => navigate('/pharmacist/inventory')}>Home</a> &gt; Dashboard
+      </p>
 
       <div className="dashboard-filters">
         <label>Date</label>
@@ -81,8 +84,7 @@ export default function Dashboard() {
       </div>
 
       <div className="dashboard-actions">
-        <button className="btn-pink-outline" onClick={handleDownloadCSV}>{'\u2B07'} Download CSV</button>
-        <button className="btn-pink-outline" onClick={() => window.print()}>{'\uD83D\uDCC4'} Generate Report</button>
+        <button className="btn-pink-outline" onClick={() => window.print()}>📄 Generate Report</button>
       </div>
     </div>
   );

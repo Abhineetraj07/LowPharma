@@ -30,13 +30,15 @@ export default function Signup() {
       const res = await API.post('/api/auth/signup', {
         username, email, password, role,
       });
-      login(res.data);
+      // Save token first so subsequent API calls work
+      localStorage.setItem('token', res.data.access_token);
       if (role === 'customer') {
-        await fetchCart();
-        navigate('/home');
-      } else {
-        navigate('/pharmacist/inventory');
+        try { await fetchCart(); } catch {}
       }
+      // Navigate before setting user state to avoid race condition with re-render
+      const dest = role === 'customer' ? '/home' : '/pharmacist/inventory';
+      login(res.data);
+      navigate(dest, { replace: true });
     } catch (err) {
       setError(err.response?.data?.detail || 'Signup failed');
     }

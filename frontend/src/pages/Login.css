@@ -142,9 +142,71 @@
   cursor: pointer;
 }
 
+.forgot-link {
+  text-align: right;
+  margin-top: -4px;
+  margin-bottom: 8px;
+}
+
+.forgot-link a {
+  color: var(--pink);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.forgot-link a:hover {
+  text-decoration: underline;
+}
+
 .auth-error {
   color: var(--red);
   font-size: 13px;
   margin-bottom: 8px;
   font-weight: 600;
+}
+
+@media (max-width: 768px) {
+  .auth-content {
+    flex-direction: column;
+  }
+  .auth-left {
+    padding: 24px;
+    border-right: none;
+    border-bottom: 1px solid #eee;
+  }
+  .auth-left img {
+    max-width: 200px;
+  }
+  .auth-left h2 {
+    font-size: 20px;
+  }
+  .auth-right {
+    padding: 24px;
+  }
+  .auth-form {
+    padding: 24px;
+  }
+  .auth-form h2 {
+    font-size: 24px;
+  }
+  .auth-form .role-label {
+    font-size: 18px;
+  }
+}
+
+@media (max-width: 480px) {
+  .auth-left {
+    padding: 16px;
+  }
+  .auth-left img {
+    max-width: 150px;
+  }
+  .auth-right {
+    padding: 16px;
+  }
+  .auth-form {
+    padding: 20px;
+    border-width: 2px;
+  }
 }

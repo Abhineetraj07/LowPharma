@@ -13,12 +13,28 @@ from ..auth import get_current_user
 router = APIRouter(prefix="/api/pharmacist", tags=["pharmacist"])
 
 
+def _pharmacist_order_ids(db: Session, pharmacist_id: int):
+    """Subquery returning order IDs that contain this pharmacist's medicines."""
+    return db.query(OrderItem.order_id).join(Medicine).filter(
+        Medicine.pharmacist_id == pharmacist_id
+    ).subquery()
+
+
 @router.get("/inventory")
 def get_inventory(user=Depends(get_current_user), db: Session = Depends(get_db)):
     if user.role != "pharmacist":
         raise HTTPException(status_code=403, detail="Not authorized")
 
-    medicines = db.query(Medicine).all()
+    medicines = db.query(Medicine).filter(Medicine.pharmacist_id == user.id).all()
+
+    # Auto-delete expired medicines
+    expired = [m for m in medicines if m.exp_date and _is_expired(m.exp_date)]
+    for m in expired:
+        db.delete(m)
+    if expired:
+        db.commit()
+        medicines = [m for m in medicines if m not in expired]
+
     alerts = [
         {"name": m.name, "alert": f"{m.quantity} stock left" if m.quantity < 15 else "Expiry soon"}
         for m in medicines
@@ -46,21 +62,36 @@ def get_inventory(user=Depends(get_current_user), db: Session = Depends(get_db))
 
 @router.get("/dashboard")
 def get_dashboard(
-    from_date: str = Query("", description="Start date DD.MM.YYYY"),
-    to_date: str = Query("", description="End date DD.MM.YYYY"),
+    from_date: str = Query("", description="Start date YYYY-MM-DD"),
+    to_date: str = Query("", description="End date YYYY-MM-DD"),
     user=Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
     if user.role != "pharmacist":
         raise HTTPException(status_code=403, detail="Not authorized")
 
-    orders = db.query(Order).all()
-    medicines = db.query(Medicine).all()
+    order_ids_sq = _pharmacist_order_ids(db, user.id)
+    query = db.query(Order).filter(Order.id.in_(order_ids_sq))
+    if from_date:
+        try:
+            fd = datetime.strptime(from_date, "%Y-%m-%d")
+            query = query.filter(Order.created_at >= fd)
+        except ValueError:
+            pass
+    if to_date:
+        try:
+            td = datetime.strptime(to_date, "%Y-%m-%d") + timedelta(days=1)
+            query = query.filter(Order.created_at < td)
+        except ValueError:
+            pass
+    orders = query.all()
+    medicines = db.query(Medicine).filter(Medicine.pharmacist_id == user.id).all()
 
-    total_sold = sum(m.quantity for m in medicines)
-    total_expired = sum(1 for m in medicines if m.exp_date and _is_expired(m.exp_date))
-    total_remaining = sum(m.quantity for m in medicines)
-    total_stock = total_sold + total_expired + total_remaining or 1
+    total_sold = sum(
+        oi.quantity for o in orders for oi in o.items
+    )
+    total_expired = sum(m.quantity for m in medicines if m.exp_date and _is_expired(m.exp_date))
+    total_remaining = sum(m.quantity for m in medicines if not (m.exp_date and _is_expired(m.exp_date)))
 
     now = datetime.utcnow()
     sales_trend = []
@@ -84,9 +115,9 @@ def get_dashboard(
     return {
         "sales_trend": sales_trend,
         "stock_turnover": {
-            "sold": 50,
-            "expired": 20,
-            "remaining": 30,
+            "sold": total_sold,
+            "expired": total_expired,
+            "remaining": total_remaining,
         },
         "expiry_loss": expiry_loss if expiry_loss else [
             {"name": "No data", "loss": 0}
@@ -100,14 +131,18 @@ def get_dashboard(
 def get_transactions(user=Depends(get_current_user), db: Session = Depends(get_db)):
     if user.role != "pharmacist":
         raise HTTPException(status_code=403, detail="Not authorized")
-    return db.query(Transaction).order_by(Transaction.created_at.desc()).all()
+    order_ids_sq = _pharmacist_order_ids(db, user.id)
+    return db.query(Transaction).filter(
+        Transaction.order_id.in_(order_ids_sq)
+    ).order_by(Transaction.created_at.desc()).all()
 
 
 @router.get("/transactions/summary")
 def get_transaction_summary(user=Depends(get_current_user), db: Session = Depends(get_db)):
     if user.role != "pharmacist":
         raise HTTPException(status_code=403, detail="Not authorized")
-    transactions = db.query(Transaction).all()
+    order_ids_sq = _pharmacist_order_ids(db, user.id)
+    transactions = db.query(Transaction).filter(Transaction.order_id.in_(order_ids_sq)).all()
     total_revenue = sum(t.amount for t in transactions if t.status == "Successful")
     successful = sum(1 for t in transactions if t.status == "Successful")
     pending = sum(1 for t in transactions if t.status == "Pending")
@@ -123,19 +158,31 @@ def download_csv(user=Depends(get_current_user), db: Session = Depends(get_db)):
     if user.role != "pharmacist":
         raise HTTPException(status_code=403, detail="Not authorized")
 
-    medicines = db.query(Medicine).all()
+    order_ids_sq = _pharmacist_order_ids(db, user.id)
+    transactions = db.query(Transaction).filter(
+        Transaction.order_id.in_(order_ids_sq)
+    ).order_by(Transaction.created_at.desc()).all()
+
     output = io.StringIO()
     writer = csv.writer(output)
-    writer.writerow(["Name", "Brand", "Quantity", "MRP", "Cost Per Unit", "Category", "Mfg Date", "Exp Date"])
-    for m in medicines:
-        writer.writerow([m.name, m.brand, m.quantity, m.mrp, m.cost_per_unit, m.category, m.mfg_date, m.exp_date])
+    writer.writerow(["Txn ID", "Order ID", "Customer", "Amount", "Payment Method", "Status", "Date"])
+    for t in transactions:
+        writer.writerow([
+            f"TXN-{t.id}",
+            f"ORD-{t.order_id}",
+            t.customer_name,
+            t.amount,
+            t.payment_method,
+            t.status,
+            t.created_at.strftime("%d/%m/%Y %H:%M") if t.created_at else "",
+        ])
 
     from fastapi.responses import StreamingResponse
     output.seek(0)
     return StreamingResponse(
         iter([output.getvalue()]),
         media_type="text/csv",
-        headers={"Content-Disposition": "attachment; filename=inventory.csv"},
+        headers={"Content-Disposition": "attachment; filename=transactions.csv"},
     )
 
 

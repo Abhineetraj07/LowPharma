@@ -35,7 +35,11 @@ export default function Navbar() {
   const handleSearch = (term) => {
     const q = term || searchQuery;
     if (q.trim()) {
-      navigate(`/search?q=${encodeURIComponent(q.trim())}`);
+      if (user?.role === 'pharmacist') {
+        navigate(`/pharmacist/medicine-list?q=${encodeURIComponent(q.trim())}`);
+      } else {
+        navigate(`/search?q=${encodeURIComponent(q.trim())}`);
+      }
       setShowSuggestions(false);
       setSearchQuery(q);
     }
@@ -87,7 +91,7 @@ export default function Navbar() {
           {user?.role === 'customer' && (
             <>
               <button onClick={() => navigate('/profile')}>
-                <span style={{ fontSize: 22 }}>&#9786;</span>
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
               </button>
               <button className="cart-btn" onClick={() => navigate('/cart')}>
                 Cart
@@ -97,7 +101,7 @@ export default function Navbar() {
           )}
           {user?.role === 'pharmacist' && (
             <button onClick={() => navigate('/pharmacist/profile')}>
-              <span style={{ fontSize: 22 }}>&#9786;</span>
+              <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
             </button>
           )}
           <button onClick={handleLogout}>Logout</button>

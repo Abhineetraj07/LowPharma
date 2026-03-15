@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import API from '../../api/axios';
+import API, { API_URL } from '../../api/axios';
 import { useCart } from '../../context/CartContext';
 import { useToast } from '../../context/ToastContext';
 import './PrescriptionUpload.css';
@@ -13,6 +13,7 @@ export default function PrescriptionUpload() {
 
   const [uploaded, setUploaded] = useState(false);
   const [selectedPast, setSelectedPast] = useState(false);
+  const [showPicker, setShowPicker] = useState(false);
   const [pastPrescriptions, setPastPrescriptions] = useState([]);
   const [address, setAddress] = useState(null);
   const [prescriptionId, setPrescriptionId] = useState(null);
@@ -45,12 +46,19 @@ export default function PrescriptionUpload() {
     }
   };
 
-  const handleSelectPast = () => {
-    if (pastPrescriptions.length > 0) {
-      setPrescriptionId(pastPrescriptions[0].id);
-      setSelectedPast(true);
-      setUploaded(false);
+  const validPrescriptions = pastPrescriptions.filter(p => !p.is_expired);
+
+  const handleTogglePicker = () => {
+    if (validPrescriptions.length > 0) {
+      setShowPicker(!showPicker);
     }
+  };
+
+  const handlePickPrescription = (id) => {
+    setPrescriptionId(id);
+    setSelectedPast(true);
+    setUploaded(false);
+    setShowPicker(false);
   };
 
   const canCheckout = uploaded || selectedPast;
@@ -63,7 +71,7 @@ export default function PrescriptionUpload() {
         </p>
 
         <div className={`upload-box ${uploaded ? 'uploaded' : ''}`} onClick={() => fileRef.current?.click()}>
-          <div className="upload-icon">{'\uD83D\uDCCB'}</div>
+          <div className="upload-icon">📋</div>
           <button className="btn-pink-outline">
             {uploaded ? 'File uploaded' : 'Upload Prescription'}
           </button>
@@ -74,26 +82,77 @@ export default function PrescriptionUpload() {
           <hr /><span>OR</span><hr />
         </div>
 
-        <div className="past-prescription">
-          <div className="rx-icon">{'\uD83D\uDCDD'}</div>
-          <p>Select from past prescriptions</p>
-          <button
-            className="btn-pink-outline"
-            onClick={handleSelectPast}
-            disabled={pastPrescriptions.length === 0}
-          >
-            {selectedPast ? 'Selected' : 'Select Files'}
-          </button>
+        <div className="past-prescription-section">
+          <div className="past-prescription-header" onClick={handleTogglePicker}>
+            <div className="rx-icon">📝</div>
+            <div style={{ flex: 1 }}>
+              <p style={{ fontWeight: 700 }}>Select from past prescriptions</p>
+              {validPrescriptions.length > 0 ? (
+                <p style={{ fontSize: 12, color: 'var(--green)', fontWeight: 600, marginTop: 2 }}>
+                  {validPrescriptions.length} valid prescription{validPrescriptions.length > 1 ? 's' : ''} available
+                </p>
+              ) : (
+                <p style={{ fontSize: 12, color: 'var(--gray)', marginTop: 2 }}>
+                  No valid prescriptions (older than 15 days)
+                </p>
+              )}
+            </div>
+            {selectedPast && (
+              <span className="past-selected-badge">Selected</span>
+            )}
+            <button
+              className="btn-pink-outline"
+              onClick={(e) => { e.stopPropagation(); handleTogglePicker(); }}
+              disabled={validPrescriptions.length === 0}
+            >
+              {showPicker ? 'Close' : 'Choose'}
+            </button>
+          </div>
+
+          {showPicker && (
+            <div className="prescription-picker">
+              {validPrescriptions.map(p => (
+                <div
+                  key={p.id}
+                  className={`prescription-picker-item ${prescriptionId === p.id ? 'selected' : ''}`}
+                  onClick={() => handlePickPrescription(p.id)}
+                >
+                  <input
+                    type="radio"
+                    name="prescription"
+                    checked={prescriptionId === p.id}
+                    onChange={() => handlePickPrescription(p.id)}
+                  />
+                  <div className="picker-item-info">
+                    <span className="picker-item-name">Prescription #{p.id}</span>
+                    <span className="picker-item-date">
+                      Uploaded: {new Date(p.uploaded_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
+                    </span>
+                    <span className="picker-item-days">{p.days_remaining} days remaining</span>
+                  </div>
+                  <a
+                    href={`${API_URL}/uploads/${p.filename}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="picker-view-link"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    View
+                  </a>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
 
       <div className="prescription-sidebar">
         <div className="bill-summary">
           <h3>Bill Summary</h3>
-          <div className="bill-row"><span>Item total (MRP)</span><span>{'\u20B9'}{itemTotal}</span></div>
-          <div className="bill-row"><span>Handling charges</span><span>{'\u20B9'}{handling}</span></div>
-          <div className="bill-row discount"><span>Total discount</span><span>-{'\u20B9'}{discount}</span></div>
-          <div className="bill-row"><span>Delivery charges</span><span>{'\u20B9'}{delivery}</span></div>
+          <div className="bill-row"><span>Item total (MRP)</span><span>₹{itemTotal}</span></div>
+          <div className="bill-row"><span>Handling charges</span><span>₹{handling}</span></div>
+          <div className="bill-row discount"><span>Total discount</span><span>-₹{discount}</span></div>
+          <div className="bill-row"><span>Delivery charges</span><span>₹{delivery}</span></div>
         </div>
 
         <div className="delivery-section" style={{ marginTop: 20 }}>

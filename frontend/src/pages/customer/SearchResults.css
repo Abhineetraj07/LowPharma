@@ -57,10 +57,26 @@
   border-bottom: 1px solid #f0f0f0;
 }
 
-.result-item .result-emoji {
-  font-size: 56px;
+.result-item .result-img {
   min-width: 80px;
-  text-align: center;
+  width: 80px;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--pink-pale);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.result-item .result-img img {
+  width: 60px;
+  height: 60px;
+  object-fit: contain;
+}
+
+.result-item .result-img span {
+  font-size: 48px;
 }
 
 .result-info {
@@ -75,8 +91,21 @@
 
 .result-info .result-brand {
   color: var(--gray);
-  font-size: 13px;
+  font-size: 12px;
   margin-top: 2px;
+}
+
+.result-info .result-pharmacy {
+  color: var(--pink);
+  font-size: 15px;
+  font-weight: 800;
+  margin-top: 4px;
+}
+
+.result-info .result-pharmacy .from-label {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--gray);
 }
 
 .result-info .result-price {
@@ -108,6 +137,34 @@
   margin-bottom: 20px;
 }
 
+.pharmacy-filter {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.pharmacy-chip {
+  width: 100%;
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  background: var(--pink-pale);
+  color: var(--dark);
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.pharmacy-chip:hover {
+  background: var(--pink-light);
+}
+
+.pharmacy-chip.active {
+  background: var(--pink);
+  color: white;
+}
+
 .category-tabs {
   display: flex;
   gap: 0;
@@ -130,4 +187,71 @@
 .category-tabs button.active {
   color: var(--pink);
   border-bottom-color: var(--pink);
+}
+
+@media (max-width: 768px) {
+  .search-page {
+    flex-direction: column;
+  }
+  .search-main {
+    padding: 16px;
+  }
+  .search-sidebar {
+    width: 100%;
+    border-left: none;
+    border-top: 1px solid #eee;
+    padding: 16px;
+  }
+  .pharmacy-filter {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+  .pharmacy-chip {
+    width: auto;
+  }
+  .result-item {
+    gap: 12px;
+    padding: 14px 0;
+  }
+  .result-item .result-img {
+    min-width: 60px;
+    width: 60px;
+    height: 60px;
+  }
+  .result-item .result-img img {
+    width: 44px;
+    height: 44px;
+  }
+  .result-info h3 {
+    font-size: 15px;
+  }
+  .result-info .result-price {
+    font-size: 17px;
+  }
+  .sort-chips {
+    flex-wrap: wrap;
+  }
+  .category-tabs {
+    padding: 0 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .result-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  .result-actions {
+    flex-direction: row;
+    width: 100%;
+  }
+  .result-actions .btn-pink,
+  .result-actions .btn-pink-outline {
+    flex: 1;
+    text-align: center;
+  }
+  .search-title {
+    font-size: 14px;
+  }
 }

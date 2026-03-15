@@ -5,12 +5,7 @@ import { useCart } from '../../context/CartContext';
 import { useToast } from '../../context/ToastContext';
 import './SearchResults.css';
 
-const EMOJIS = {
-  'Pain Relief': '\uD83D\uDC8A', 'Antibiotics': '\uD83E\uDDA0', 'Eye Drops': '\uD83D\uDC41\uFE0F',
-  'Cough Syrup': '\uD83E\uDE79', 'Insulin Therapy': '\uD83D\uDC89', 'Gastric': '\uD83C\uDF4E',
-  'Supplements': '\uD83D\uDCAA', 'Heart': '\u2764\uFE0F', 'Mental Health': '\uD83E\uDDE0',
-  'Skin Care': '\u2728', 'Cold & Flu': '\uD83E\uDD27', 'Allergy': '\uD83C\uDF3B', 'Diabetes': '\uD83C\uDF6C',
-};
+import { API_URL } from '../../api/axios';
 
 export default function SearchResults() {
   const [searchParams] = useSearchParams();
@@ -23,21 +18,25 @@ export default function SearchResults() {
 
   const [results, setResults] = useState([]);
   const [categories, setCategories] = useState(['All']);
+  const [pharmacies, setPharmacies] = useState(['All']);
   const [activeCategory, setActiveCategory] = useState(categoryParam || 'All');
+  const [activePharmacy, setActivePharmacy] = useState('All');
   const [sort, setSort] = useState('default');
 
   useEffect(() => {
     API.get('/api/medicines/categories').then(res => setCategories(res.data));
+    API.get('/api/medicines/pharmacies').then(res => setPharmacies(res.data));
   }, []);
 
   useEffect(() => {
     const params = new URLSearchParams();
     if (query) params.set('search', query);
     if (activeCategory && activeCategory !== 'All') params.set('category', activeCategory);
+    if (activePharmacy && activePharmacy !== 'All') params.set('pharmacy', activePharmacy);
     if (sort !== 'default') params.set('sort', sort);
 
     API.get(`/api/medicines/?${params.toString()}`).then(res => setResults(res.data));
-  }, [query, activeCategory, sort]);
+  }, [query, activeCategory, activePharmacy, sort]);
 
   const handleAddToCart = async (medId) => {
     await addToCart(medId);
@@ -68,18 +67,27 @@ export default function SearchResults() {
           </p>
 
           <div className="sort-chips">
-            {[['default', 'Default'], ['price_asc', 'Price \u2191'], ['price_desc', 'Price \u2193'], ['name', 'Name']].map(([key, label]) => (
+            {[['default', 'Default'], ['price_asc', 'Price ↑'], ['price_desc', 'Price ↓'], ['name', 'Name']].map(([key, label]) => (
               <button key={key} className={sort === key ? 'active' : ''} onClick={() => setSort(key)}>{label}</button>
             ))}
           </div>
 
           {results.map(med => (
             <div key={med.id} className="result-item">
-              <div className="result-emoji">{EMOJIS[med.category] || '\uD83D\uDC8A'}</div>
+              <div className="result-img">
+                {med.image_url ? (
+                  <img src={`${API_URL}/uploads/${med.image_url}`} alt={med.name} />
+                ) : (
+                  <span>💊</span>
+                )}
+              </div>
               <div className="result-info">
                 <h3>{med.name} {med.requires_prescription ? <span style={{ fontSize: 11, background: '#fef3c7', color: '#d97706', padding: '2px 8px', borderRadius: 50, fontWeight: 700, marginLeft: 8 }}>Rx Required</span> : null}</h3>
                 <p className="result-brand">By {med.brand}</p>
-                <p className="result-price">\u20B9{med.mrp}</p>
+                {med.pharmacy_name && med.pharmacy_name !== 'LowPharma' && (
+                  <p className="result-pharmacy">{med.pharmacy_name}</p>
+                )}
+                <p className="result-price">{'₹'}{med.mrp}</p>
               </div>
               <div className="result-actions">
                 <button className="btn-pink-outline" onClick={() => handleAddToCart(med.id)}>Add to cart</button>
@@ -94,7 +102,21 @@ export default function SearchResults() {
         </div>
 
         <div className="search-sidebar">
-          <h3>Filter by</h3>
+          <h3>Pharmacy</h3>
+          <div className="pharmacy-filter">
+            {pharmacies.map(ph => (
+              <button
+                key={ph}
+                className={`pharmacy-chip ${activePharmacy === ph ? 'active' : ''}`}
+                onClick={() => setActivePharmacy(ph)}
+              >
+                {ph}
+              </button>
+            ))}
+          </div>
+
+          <hr style={{ border: 'none', borderTop: '1px solid #eee', margin: '16px 0' }} />
+
           <p className="sidebar-info">
             {cartCount > 0
               ? `${cartCount} item(s) in cart`

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
 import API from '../../api/axios';
+import '../customer/Profile.css';
 import './Pharmacist.css';
 
 const TABS = ['Edit Profile', 'Pharmacy Details', 'Settings'];
@@ -60,7 +61,7 @@ export default function PharmacistProfile() {
     <div className="profile-page">
       <div className="profile-sidebar">
         <div className="profile-user">
-          <span className="avatar">{'\u263A'}</span>
+          <span className="avatar"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>
           <h3>{user?.username}</h3>
         </div>
         <div className="profile-menu">

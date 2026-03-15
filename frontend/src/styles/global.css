@@ -119,3 +119,22 @@ input, select {
   background: var(--pink-light);
   border-radius: 3px;
 }
+
+/* ===== Responsive ===== */
+@media (max-width: 768px) {
+  .btn-pink {
+    padding: 10px 24px;
+    font-size: 14px;
+  }
+  .btn-pink-outline {
+    padding: 8px 20px;
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 480px) {
+  .btn-pink {
+    padding: 10px 20px;
+    font-size: 13px;
+  }
+}

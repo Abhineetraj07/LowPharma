@@ -7,7 +7,7 @@ A fullstack web application for online medicine ordering with two roles: **Custo
 | Layer | Technology |
 |-------|-----------|
 | Frontend | React 18, Vite, React Router v6 |
-| Styling | Plain CSS with CSS Variables |
+| Styling | Plain CSS with CSS Variables (fully responsive) |
 | Charts | Chart.js + react-chartjs-2 |
 | HTTP Client | Axios |
 | Backend | FastAPI (Python) |
@@ -18,32 +18,40 @@ A fullstack web application for online medicine ordering with two roles: **Custo
 ## Features
 
 ### Customer
-- Role-based login & signup
-- Browse medicines by category with search autocomplete
-- Medicine detail page with stock, pricing, and prescription info
+- Role-based login & signup with forgot password (username-based reset)
+- Browse medicines by category with search autocomplete and randomized display
+- Medicine detail page with stock, pricing, category images, and prescription info
 - Cart with quantity controls and bill summary
-- Prescription upload (required only for Rx medicines)
-- Checkout with coupon codes and multiple payment methods
-- Order tracking (Placed > Approved > Dispatched > Out for Delivery > Delivered)
-- Profile management (edit info, order history, medical records, addresses, change password)
+- Prescription upload with 15-day validity — reuse past valid prescriptions or upload new ones via a radio-button picker
+- Checkout with coupon codes, multiple payment methods, and address picker
+- Order tracking (Placed > Processing > Shipped > Out for Delivery > Delivered)
+- Profile management:
+  - Edit name & mobile
+  - Order history (current & past orders with delivery tracker)
+  - Medical records (view prescriptions with validity badges and expiry countdown)
+  - Manage addresses (add, edit inline, delete with type labels)
+  - Change password
+- Session management — fresh browser session always starts at the landing page
 
 ### Pharmacist
 - Inventory management with low-stock alerts (< 15 units)
-- Add new medicines to inventory
+- Add new medicines with image upload and prescription-required toggle
 - Full medicine list with detailed view
 - Prescription review (approve/deny with status tracking)
-- Order management with search, date filters, and approve/deny actions
-- Dashboard with charts (Sales Trend, Stock Turnover, Expiry Loss)
+- Order management with search, date filters (no future dates), and approve/deny actions
+- Dashboard with charts (Sales Trend, Stock Turnover, Expiry Loss) filtered by date range
 - CSV export and report generation
 - Transaction history with revenue summary
-- Pharmacy profile and settings
+- Pharmacy profile and settings (edit profile, pharmacy details, change password)
 
 ### General
 - Toast notifications for all key actions
 - Consistent pink-themed UI with Syne + Nunito fonts
 - Sticky navbar with role-based navigation
 - Footer on every page
-- Responsive design
+- Fully responsive (desktop, tablet, mobile)
+- Stock validation — orders rejected if insufficient inventory
+- Environment-variable-based API URL for deployment readiness
 
 ## Design System
 
@@ -64,23 +72,25 @@ A fullstack web application for online medicine ordering with two roles: **Custo
 ```
 LowPharma/
 ├── frontend/                # React + Vite
+│   ├── .env                 # VITE_API_URL config
 │   └── src/
 │       ├── components/      # Navbar, Footer
 │       ├── pages/
-│       │   ├── customer/    # Home, Search, Cart, Checkout, Profile...
-│       │   └── pharmacist/  # Inventory, Orders, Dashboard, Prescriptions...
+│       │   ├── customer/    # Home, Search, Cart, Checkout, Profile, PrescriptionUpload...
+│       │   └── pharmacist/  # Inventory, Orders, Dashboard, Prescriptions, AddStock...
 │       ├── context/         # AuthContext, CartContext, ToastContext
-│       ├── api/             # Axios instance
+│       ├── api/             # Axios instance with env-based API URL
 │       └── styles/          # Global CSS with design variables
 ├── backend/                 # FastAPI
 │   ├── app/
-│   │   ├── routes/          # auth, medicines, cart, orders, prescriptions...
+│   │   ├── routes/          # auth, medicines, cart, orders, prescriptions, addresses...
 │   │   ├── models.py        # SQLAlchemy models
 │   │   ├── schemas.py       # Pydantic schemas
 │   │   ├── auth.py          # JWT + bcrypt utilities
 │   │   └── main.py          # App entry point
-│   └── seed.py              # Database seeder (25 medicines)
-└── UI/                      # Design mockups
+│   ├── uploads/             # Prescription files & medicine images
+│   └── seed.py              # Database seeder
+└── UML/                     # Mermaid.js UML diagrams (use case, class, sequence, activity, ER)
 ```
 
 ## Getting Started
@@ -96,13 +106,20 @@ LowPharma/
 ```bash
 cd backend
 pip install -r requirements.txt
-python3 seed.py              # Seeds 25 medicines into the database
+python3 seed.py              # Seeds medicines into the database
 ```
 
 **2. Frontend**
 ```bash
 cd frontend
 npm install
+```
+
+### Environment Variables
+
+**Frontend** (`frontend/.env`):
+```
+VITE_API_URL=http://localhost:8000
 ```
 
 ### Running the App
@@ -117,16 +134,23 @@ cd backend && python3 -m uvicorn app.main:app --reload --port 8000
 cd frontend && npm run dev
 ```
 
-Or in a single command:
-```bash
-cd LowPharma && (cd backend && python3 -m uvicorn app.main:app --reload --port 8000) & (cd frontend && npm run dev)
-```
-
 Then open **http://localhost:5173** in your browser.
 
 ### API Docs
 
 FastAPI auto-generates interactive API docs at **http://localhost:8000/docs**
+
+## UML Diagrams
+
+The `UML/` directory contains five Mermaid.js diagrams:
+
+1. **Use Case Diagram** — all customer and pharmacist interactions
+2. **Class Diagram** — data models and relationships
+3. **Sequence Diagram** — order placement flow with prescription and address selection
+4. **Activity Diagram** — customer order flow and pharmacist workflows
+5. **ER Diagram** — full database schema with foreign key relationships
+
+Paste the code from each file into [mermaid.live](https://mermaid.live) to render.
 
 ## Team
 

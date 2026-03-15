@@ -5,18 +5,25 @@ import { useToast } from '../../context/ToastContext';
 import API from '../../api/axios';
 import './Cart.css';
 
+import { API_URL } from '../../api/axios';
+
 export default function Cart() {
   const navigate = useNavigate();
   const { cartItems, fetchCart, updateCartItem, removeCartItem } = useCart();
   const { showToast } = useToast();
-  const [address, setAddress] = useState(null);
+  const [addresses, setAddresses] = useState([]);
+  const [selectedAddressId, setSelectedAddressId] = useState(null);
+  const [showAddressPicker, setShowAddressPicker] = useState(false);
 
   useEffect(() => {
     fetchCart();
     API.get('/api/addresses/').then(res => {
-      if (res.data.length > 0) setAddress(res.data[0]);
+      setAddresses(res.data);
+      if (res.data.length > 0) setSelectedAddressId(res.data[0].id);
     });
   }, []);
+
+  const address = addresses.find(a => a.id === selectedAddressId) || null;
 
   const itemTotal = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
   const handling = 10;
@@ -65,7 +72,13 @@ export default function Cart() {
 
         {cartItems.map(item => (
           <div key={item.id} className="cart-item">
-            <div className="cart-item-emoji">{'\uD83D\uDC8A'}</div>
+            <div className="cart-item-img">
+              {item.image_url ? (
+                <img src={`${API_URL}/uploads/${item.image_url}`} alt={item.name} />
+              ) : (
+                <span>💊</span>
+              )}
+            </div>
             <div className="cart-item-info">
               <h4>{item.name}</h4>
               <p>{item.category}</p>
@@ -93,14 +106,54 @@ export default function Cart() {
         </div>
 
         <div className="delivery-section">
-          <h4>{'\uD83C\uDFE0'} Delivering to</h4>
+          <h4>{'🏠'} Delivering to</h4>
           {address ? (
             <>
-              <p>{address.house_no}, {address.road}, {address.city}, {address.state} {address.pin_code}</p>
-              <a onClick={() => navigate('/add-address')}>Change</a>
+              <div className="selected-address">
+                <span className="address-type-badge">{address.address_type}</span>
+                <p>{address.name}</p>
+                <p>{address.house_no}, {address.road}, {address.city}, {address.state} {address.pin_code}</p>
+              </div>
+              <a className="change-address-link" onClick={() => setShowAddressPicker(!showAddressPicker)}>
+                {showAddressPicker ? 'Close' : 'Change'}
+              </a>
             </>
           ) : (
-            <a onClick={() => navigate('/add-address')}>Add address</a>
+            <a onClick={() => navigate('/profile', { state: { tab: 'Manage Address' } })}>+ Add address</a>
+          )}
+
+          {showAddressPicker && (
+            <div className="address-picker">
+              {addresses.map(addr => (
+                <label
+                  key={addr.id}
+                  className={`address-picker-item ${addr.id === selectedAddressId ? 'selected' : ''}`}
+                  onClick={() => {
+                    setSelectedAddressId(addr.id);
+                    setShowAddressPicker(false);
+                  }}
+                >
+                  <input
+                    type="radio"
+                    name="delivery-address"
+                    checked={addr.id === selectedAddressId}
+                    onChange={() => {}}
+                  />
+                  <div>
+                    <span className="address-type-badge">{addr.address_type}</span>
+                    <p className="addr-name">{addr.name}</p>
+                    <p className="addr-detail">{addr.house_no}, {addr.road}, {addr.city}, {addr.state} {addr.pin_code}</p>
+                    <p className="addr-phone">{addr.mobile}</p>
+                  </div>
+                </label>
+              ))}
+              <button
+                className="add-new-address-btn"
+                onClick={() => navigate('/profile', { state: { tab: 'Manage Address' } })}
+              >
+                + Add a new address
+              </button>
+            </div>
           )}
         </div>
 

@@ -4,12 +4,7 @@ import API from '../../api/axios';
 import { useCart } from '../../context/CartContext';
 import './MedicineDetail.css';
 
-const EMOJIS = {
-  'Pain Relief': '\uD83D\uDC8A', 'Antibiotics': '\uD83E\uDDA0', 'Eye Drops': '\uD83D\uDC41\uFE0F',
-  'Cough Syrup': '\uD83E\uDE79', 'Insulin Therapy': '\uD83D\uDC89', 'Gastric': '\uD83C\uDF4E',
-  'Supplements': '\uD83D\uDCAA', 'Heart': '\u2764\uFE0F', 'Mental Health': '\uD83E\uDDE0',
-  'Skin Care': '\u2728', 'Cold & Flu': '\uD83E\uDD27', 'Allergy': '\uD83C\uDF3B', 'Diabetes': '\uD83C\uDF6C',
-};
+import { API_URL } from '../../api/axios';
 
 export default function MedicineDetail() {
   const { id } = useParams();
@@ -30,21 +25,28 @@ export default function MedicineDetail() {
 
   return (
     <div className="medicine-detail">
-      <span className="detail-back" onClick={() => navigate(-1)}>\u2190 Back</span>
+      <span className="detail-back" onClick={() => navigate(-1)}>{'←'} Back</span>
 
       <div className="detail-content">
         <div className="detail-image">
-          {EMOJIS[medicine.category] || '\uD83D\uDC8A'}
+          {medicine.image_url ? (
+            <img src={`${API_URL}/uploads/${medicine.image_url}`} alt={medicine.name} />
+          ) : (
+            <span>💊</span>
+          )}
         </div>
 
         <div className="detail-info">
           <h1>{medicine.name}</h1>
           <p className="detail-brand">By {medicine.brand}</p>
+          {medicine.pharmacy_name && medicine.pharmacy_name !== 'LowPharma' && (
+            <p className="detail-pharmacy">{medicine.pharmacy_name}</p>
+          )}
           <span className="detail-category">{medicine.category}</span>
           {medicine.requires_prescription ? (
             <span style={{ display: 'inline-block', background: '#fef3c7', color: '#d97706', padding: '4px 14px', borderRadius: 50, fontSize: 13, fontWeight: 700, marginLeft: 8 }}>Rx Prescription Required</span>
           ) : null}
-          <p className="detail-price">\u20B9{medicine.mrp}</p>
+          <p className="detail-price">{'₹'}{medicine.mrp}</p>
 
           <div className="detail-meta">
             <div>
@@ -55,7 +57,7 @@ export default function MedicineDetail() {
             </div>
             <div>
               <span>Cost per Unit</span>
-              <p>\u20B9{medicine.cost_per_unit}</p>
+              <p>{'₹'}{medicine.cost_per_unit}</p>
             </div>
             <div>
               <span>Mfg Date</span>
@@ -68,6 +70,16 @@ export default function MedicineDetail() {
           </div>
 
           <button className="btn-pink" onClick={handleAddToCart}>Add to Cart</button>
+
+          {medicine.pharmacy_name && medicine.pharmacy_name !== 'LowPharma' && (
+            <div className="pharmacy-info-card">
+              <h4>Sold by</h4>
+              <p className="pharmacy-info-name">{medicine.pharmacy_name}</p>
+              {medicine.pharmacy_address && <p className="pharmacy-info-row">📍 {medicine.pharmacy_address}</p>}
+              {medicine.pharmacy_hours && <p className="pharmacy-info-row">🕐 {medicine.pharmacy_hours}</p>}
+              {medicine.pharmacy_contact && <p className="pharmacy-info-row">📞 {medicine.pharmacy_contact}</p>}
+            </div>
+          )}
         </div>
       </div>
     </div>

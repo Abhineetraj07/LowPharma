@@ -163,3 +163,331 @@
   margin-bottom: 16px;
   background: #f5f5f5;
 }
+
+/* Order Cards */
+.order-card {
+  border: 2px solid var(--pink-light);
+  border-radius: 14px;
+  padding: 18px 20px;
+  margin-bottom: 16px;
+}
+
+.order-card.past {
+  opacity: 0.85;
+}
+
+.order-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.order-card-id {
+  font-weight: 800;
+  font-size: 15px;
+  margin-right: 12px;
+}
+
+.order-card-date {
+  font-size: 12px;
+  color: var(--gray);
+}
+
+.order-card-total {
+  font-weight: 800;
+  font-size: 16px;
+  color: var(--pink);
+}
+
+.order-card-items {
+  border-top: 1px solid var(--pink-pale);
+  padding-top: 10px;
+}
+
+.order-card-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 4px 0;
+  font-size: 14px;
+}
+
+.order-card-qty {
+  color: var(--gray);
+  font-size: 12px;
+}
+
+.order-card-price {
+  font-weight: 700;
+  font-size: 13px;
+}
+
+.order-card-pharmacy {
+  font-size: 11px;
+  color: var(--pink);
+  font-weight: 700;
+}
+
+.order-card-delivered {
+  margin-top: 12px;
+  color: var(--green);
+  font-weight: 700;
+  font-size: 13px;
+}
+
+.order-card-cancelled {
+  margin-top: 12px;
+  color: var(--red);
+  font-weight: 700;
+  font-size: 13px;
+}
+
+/* Mini Delivery Tracker */
+.mini-tracker {
+  display: flex;
+  align-items: flex-start;
+  gap: 0;
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid var(--pink-pale);
+}
+
+.mini-tracker-step {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+}
+
+.mini-tracker-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 2px solid #ddd;
+  background: white;
+  z-index: 1;
+}
+
+.mini-tracker-step.completed .mini-tracker-dot {
+  background: var(--pink);
+  border-color: var(--pink);
+}
+
+.mini-tracker-step.current .mini-tracker-dot {
+  background: var(--pink);
+  border-color: var(--pink);
+  box-shadow: 0 0 0 3px var(--pink-pale);
+}
+
+.mini-tracker-line {
+  position: absolute;
+  top: 7px;
+  left: calc(50% + 7px);
+  width: calc(100% - 14px);
+  height: 2px;
+  background: #ddd;
+}
+
+.mini-tracker-line.completed {
+  background: var(--pink);
+}
+
+.mini-tracker-label {
+  font-size: 10px;
+  color: var(--gray);
+  margin-top: 6px;
+  text-align: center;
+}
+
+.mini-tracker-step.completed .mini-tracker-label {
+  color: var(--dark);
+}
+
+.mini-tracker-step.current .mini-tracker-label {
+  color: var(--pink);
+  font-weight: 700;
+}
+
+/* Prescription badges */
+.presc-badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 50px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.presc-badge.valid {
+  background: #d1fae5;
+  color: var(--green);
+}
+
+.presc-badge.expired {
+  background: #fee2e2;
+  color: var(--red);
+}
+
+/* Address Edit Form (inline) */
+.address-edit-form input {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 13px;
+  margin-bottom: 8px;
+  background: #f5f5f5;
+  font-family: 'Nunito', sans-serif;
+}
+
+.address-edit-form input:focus {
+  border-color: var(--pink);
+  outline: none;
+}
+
+.address-edit-form .address-type-chips {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.address-edit-form .address-type-chips button {
+  padding: 5px 14px;
+  border-radius: 50px;
+  font-size: 12px;
+  font-weight: 700;
+  background: #f5f5f5;
+  color: var(--dark);
+  border: 2px solid #ddd;
+}
+
+.address-edit-form .address-type-chips button.active {
+  background: var(--pink-pale);
+  color: var(--pink);
+  border-color: var(--pink);
+}
+
+/* Checkout Address Picker */
+.checkout-address-picker {
+  margin-top: 12px;
+  border: 1px solid #eee;
+  border-radius: 12px;
+  overflow: hidden;
+  animation: fadeIn 0.2s ease;
+}
+
+.checkout-address-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 16px;
+  cursor: pointer;
+  border-bottom: 1px solid #f0f0f0;
+  transition: background 0.15s;
+}
+
+.checkout-address-item:last-child {
+  border-bottom: none;
+}
+
+.checkout-address-item:hover {
+  background: var(--pink-pale);
+}
+
+.checkout-address-item.selected {
+  background: var(--pink-pale);
+  border-left: 3px solid var(--pink);
+}
+
+.checkout-address-item input[type="radio"] {
+  margin-top: 4px;
+  accent-color: var(--pink);
+}
+
+.checkout-address-item .addr-type {
+  display: inline-block;
+  background: var(--pink-pale);
+  color: var(--pink);
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 50px;
+}
+
+.checkout-address-item .addr-name {
+  font-weight: 700;
+  font-size: 13px;
+  margin: 2px 0;
+  color: var(--dark);
+}
+
+.checkout-address-item .addr-detail {
+  font-size: 12px;
+  color: var(--gray);
+  margin: 0;
+}
+
+@media (max-width: 768px) {
+  .profile-page {
+    flex-direction: column;
+  }
+  .profile-sidebar {
+    width: 100%;
+    border-right: none;
+    border-bottom: 1px solid #eee;
+    padding: 16px;
+  }
+  .profile-menu {
+    display: flex;
+    overflow-x: auto;
+  }
+  .profile-menu button {
+    white-space: nowrap;
+    padding: 12px 16px;
+    font-size: 13px;
+    border-bottom: none;
+    border-right: 1px solid var(--pink-pale);
+  }
+  .profile-menu button:last-child {
+    border-right: none;
+  }
+  .profile-content {
+    padding: 16px;
+  }
+  .profile-form {
+    max-width: 100%;
+  }
+  .address-card {
+    max-width: 100%;
+  }
+  .order-card-header {
+    flex-direction: column;
+    gap: 4px;
+  }
+  .mini-tracker-label {
+    font-size: 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  .profile-content h2 {
+    font-size: 18px;
+  }
+  .profile-form {
+    padding: 16px;
+    border-width: 2px;
+  }
+  .order-card {
+    padding: 12px 14px;
+  }
+  .mini-tracker-dot {
+    width: 10px;
+    height: 10px;
+  }
+  .mini-tracker-line {
+    top: 5px;
+    left: calc(50% + 5px);
+    width: calc(100% - 10px);
+  }
+}

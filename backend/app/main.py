@@ -3,10 +3,19 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 import os
 
+from sqlalchemy import inspect, text
 from .database import engine, Base
 from .routes import auth, medicines, cart, orders, prescriptions, addresses, profile, pharmacist
 
 Base.metadata.create_all(bind=engine)
+
+# Add pharmacist_id column if it doesn't exist (migration for existing DBs)
+with engine.connect() as conn:
+    inspector = inspect(engine)
+    columns = [c["name"] for c in inspector.get_columns("medicines")]
+    if "pharmacist_id" not in columns:
+        conn.execute(text("ALTER TABLE medicines ADD COLUMN pharmacist_id INTEGER REFERENCES users(id)"))
+        conn.commit()
 
 app = FastAPI(title="LowPharma API")
 

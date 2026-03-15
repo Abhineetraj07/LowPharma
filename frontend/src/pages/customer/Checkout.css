@@ -42,12 +42,94 @@
   font-weight: 700;
 }
 
+.coupon-section {
+  margin-bottom: 24px;
+}
+
+.coupon-remove-btn {
+  padding: 12px 18px;
+  border-radius: 50px;
+  background: #fee2e2;
+  color: var(--red);
+  font-weight: 700;
+  font-size: 16px;
+  border: none;
+  cursor: pointer;
+}
+
 .coupon-success {
   color: var(--green);
   font-size: 13px;
   font-weight: 700;
-  margin-top: -16px;
-  margin-bottom: 16px;
+  margin-top: 8px;
+  margin-bottom: 8px;
+}
+
+.view-coupons-btn {
+  background: none;
+  border: none;
+  color: var(--pink);
+  font-weight: 700;
+  font-size: 13px;
+  cursor: pointer;
+  padding: 4px 0;
+  margin-top: 4px;
+  text-decoration: underline;
+}
+
+.coupons-list {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.coupon-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border: 2px dashed var(--pink-light);
+  border-radius: 12px;
+  padding: 14px 16px;
+  background: var(--pink-pale);
+}
+
+.coupon-card-left {
+  flex: 1;
+}
+
+.coupon-code-badge {
+  display: inline-block;
+  background: var(--pink);
+  color: white;
+  font-size: 12px;
+  font-weight: 800;
+  padding: 3px 10px;
+  border-radius: 4px;
+  letter-spacing: 0.5px;
+}
+
+.coupon-desc {
+  font-size: 12px;
+  color: var(--gray);
+  margin-top: 4px;
+}
+
+.coupon-apply-btn {
+  background: white;
+  border: 2px solid var(--pink);
+  color: var(--pink);
+  font-weight: 700;
+  font-size: 13px;
+  padding: 6px 16px;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: all var(--transition);
+}
+
+.coupon-apply-btn:hover {
+  background: var(--pink);
+  color: white;
 }
 
 .payment-methods h3 {
@@ -80,8 +162,48 @@
 }
 
 .payment-option.selected::after {
-  content: '\u2713';
+  content: '✓';
   color: var(--pink);
   font-size: 20px;
   font-weight: 800;
+}
+
+@media (max-width: 768px) {
+  .checkout-page {
+    flex-direction: column;
+  }
+  .checkout-left {
+    padding: 16px;
+  }
+  .checkout-right {
+    width: 100%;
+    border-left: none;
+    border-top: 1px solid #eee;
+    padding: 16px;
+  }
+  .checkout-left h2 {
+    font-size: 18px;
+  }
+  .coupon-card {
+    padding: 10px 12px;
+  }
+  .payment-option {
+    padding: 12px 14px;
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .coupon-input {
+    flex-direction: column;
+  }
+  .coupon-input input {
+    width: 100%;
+  }
+  .coupon-input button {
+    width: 100%;
+  }
+  .payment-methods h3 {
+    font-size: 17px;
+  }
 }

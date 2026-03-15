@@ -59,6 +59,9 @@ class Medicine(Base):
     category = Column(String, default="")
     image_url = Column(String, default="")
     requires_prescription = Column(Integer, default=0)
+    pharmacist_id = Column(Integer, ForeignKey("users.id"), nullable=True)
+
+    pharmacist = relationship("User", foreign_keys=[pharmacist_id])
 
 
 class CartItem(Base):

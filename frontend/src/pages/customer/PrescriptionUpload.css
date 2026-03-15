@@ -61,22 +61,102 @@
   border-top: 1px solid #ddd;
 }
 
-.past-prescription {
+.past-prescription-section {
   border: 2px solid var(--dark);
   border-radius: 12px;
+  overflow: hidden;
+}
+
+.past-prescription-header {
   padding: 20px 24px;
   display: flex;
   align-items: center;
   gap: 16px;
+  cursor: pointer;
+  transition: background var(--transition);
 }
 
-.past-prescription .rx-icon {
+.past-prescription-header:hover {
+  background: var(--pink-pale);
+}
+
+.past-prescription-header .rx-icon {
   font-size: 36px;
 }
 
-.past-prescription p {
-  flex: 1;
+.past-selected-badge {
+  display: inline-block;
+  background: #d1fae5;
+  color: var(--green);
+  font-size: 12px;
   font-weight: 700;
+  padding: 4px 12px;
+  border-radius: 50px;
+}
+
+.prescription-picker {
+  border-top: 1px solid #eee;
+  animation: fadeIn 0.2s ease;
+}
+
+.prescription-picker-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 24px;
+  cursor: pointer;
+  border-bottom: 1px solid #f0f0f0;
+  transition: background 0.15s;
+}
+
+.prescription-picker-item:last-child {
+  border-bottom: none;
+}
+
+.prescription-picker-item:hover {
+  background: var(--pink-pale);
+}
+
+.prescription-picker-item.selected {
+  background: var(--pink-pale);
+  border-left: 3px solid var(--pink);
+}
+
+.prescription-picker-item input[type="radio"] {
+  margin-top: 2px;
+  accent-color: var(--pink);
+  flex-shrink: 0;
+}
+
+.picker-item-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.picker-item-name {
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--dark);
+}
+
+.picker-item-date {
+  font-size: 12px;
+  color: var(--gray);
+}
+
+.picker-item-days {
+  font-size: 11px;
+  color: var(--green);
+  font-weight: 600;
+}
+
+.picker-view-link {
+  color: var(--pink);
+  font-weight: 700;
+  font-size: 13px;
+  text-decoration: underline;
 }
 
 .prescription-sidebar {
@@ -90,4 +170,44 @@
   color: var(--gray);
   margin-top: 16px;
   line-height: 1.5;
+}
+
+@media (max-width: 768px) {
+  .prescription-page {
+    flex-direction: column;
+  }
+  .prescription-main {
+    padding: 16px;
+  }
+  .prescription-sidebar {
+    width: 100%;
+    border-left: none;
+    border-top: 1px solid #eee;
+    padding: 16px;
+  }
+  .upload-box {
+    padding: 30px;
+  }
+  .past-prescription-header {
+    padding: 14px 16px;
+    gap: 12px;
+  }
+  .prescription-picker-item {
+    padding: 12px 16px;
+    gap: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .upload-box {
+    padding: 20px;
+    border-width: 2px;
+  }
+  .upload-box .upload-icon {
+    font-size: 36px;
+  }
+  .past-prescription-header {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
 }

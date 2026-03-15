@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 
 from ..database import get_db
 from ..models import User
-from ..schemas import SignupRequest, LoginRequest, TokenResponse
+from ..schemas import SignupRequest, LoginRequest, TokenResponse, ForgotPassword
 from ..auth import hash_password, verify_password, create_access_token
 
 router = APIRouter(prefix="/api/auth", tags=["auth"])
@@ -52,3 +52,15 @@ def login(req: LoginRequest, db: Session = Depends(get_db)):
         username=user.username,
         user_id=user.id,
     )
+
+
+@router.put("/forgot-password")
+def forgot_password(req: ForgotPassword, db: Session = Depends(get_db)):
+    user = db.query(User).filter(
+        (User.username == req.username) | (User.email == req.username)
+    ).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="No account found with that username")
+    user.password_hash = hash_password(req.new_password)
+    db.commit()
+    return {"message": "Password updated successfully"}

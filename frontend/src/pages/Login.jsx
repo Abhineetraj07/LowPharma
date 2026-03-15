@@ -24,13 +24,15 @@ export default function Login() {
         setError(`This account is registered as a ${res.data.role}`);
         return;
       }
-      login(res.data);
+      // Save token first so subsequent API calls work
+      localStorage.setItem('token', res.data.access_token);
       if (role === 'customer') {
-        await fetchCart();
-        navigate('/home');
-      } else {
-        navigate('/pharmacist/inventory');
+        try { await fetchCart(); } catch {}
       }
+      // Navigate before setting user state to avoid race condition with re-render
+      const dest = role === 'customer' ? '/home' : '/pharmacist/inventory';
+      login(res.data);
+      navigate(dest, { replace: true });
     } catch (err) {
       setError(err.response?.data?.detail || 'Invalid username or password');
     }
@@ -76,6 +78,10 @@ export default function Login() {
               onChange={(e) => setPassword(e.target.value)}
               required
             />
+
+            <p className="forgot-link">
+              <a onClick={() => navigate(`/forgot-password/${role}`)}>Forgot Password?</a>
+            </p>
 
             <button type="submit" className="btn-pink">Login</button>
 

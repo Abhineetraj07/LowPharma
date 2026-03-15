@@ -23,6 +23,18 @@ def create_address(req: AddressCreate, user=Depends(get_current_user), db: Sessi
     return address
 
 
+@router.put("/{address_id}", response_model=AddressResponse)
+def update_address(address_id: int, req: AddressCreate, user=Depends(get_current_user), db: Session = Depends(get_db)):
+    addr = db.query(Address).filter(Address.id == address_id, Address.user_id == user.id).first()
+    if not addr:
+        raise HTTPException(status_code=404, detail="Address not found")
+    for key, value in req.model_dump().items():
+        setattr(addr, key, value)
+    db.commit()
+    db.refresh(addr)
+    return addr
+
+
 @router.delete("/{address_id}")
 def delete_address(address_id: int, user=Depends(get_current_user), db: Session = Depends(get_db)):
     addr = db.query(Address).filter(Address.id == address_id, Address.user_id == user.id).first()

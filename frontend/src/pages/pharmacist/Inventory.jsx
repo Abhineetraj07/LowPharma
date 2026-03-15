@@ -13,6 +13,9 @@ export default function Inventory() {
 
   return (
     <div className="pharma-page">
+      <p className="cart-breadcrumb" style={{ marginBottom: 8 }}>
+        <a onClick={() => navigate('/pharmacist/inventory')}>Home</a> &gt; Inventory
+      </p>
       <div style={{ textAlign: 'center', marginBottom: 20 }}>
         <button className="btn-pink" onClick={() => navigate('/pharmacist/add-stock')}>+ Add Stock</button>
       </div>

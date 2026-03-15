@@ -1,11 +1,55 @@
 from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.orm import Session
-from datetime import datetime
+from sqlalchemy.orm import Session, joinedload
+from datetime import datetime, timedelta
 
 from ..database import get_db
-from ..models import Order, OrderItem, CartItem, Medicine, Transaction, User
-from ..schemas import OrderCreate, OrderResponse
+from ..models import Order, OrderItem, CartItem, Medicine, Transaction, User, Prescription
+from ..schemas import OrderCreate, OrderResponse, OrderItemResponse
 from ..auth import get_current_user
+
+
+DELIVERY_STAGES = ["Placed", "Processing", "Shipped", "Out for Delivery", "Delivered"]
+
+
+def _pharmacist_order_ids(db: Session, pharmacist_id: int):
+    """Subquery returning order IDs that contain this pharmacist's medicines."""
+    return db.query(OrderItem.order_id).join(Medicine).filter(
+        Medicine.pharmacist_id == pharmacist_id
+    ).subquery()
+
+
+def _auto_progress_delivery(orders, db: Session):
+    """Auto-progress delivery stages based on order age.
+    Skips cancelled orders and orders still pending prescription approval.
+    Stages progress every ~8 hours after order creation."""
+    changed = False
+    now = datetime.utcnow()
+    for order in orders:
+        if order.delivery_stage in ("Cancelled", "Delivered"):
+            continue
+        if order.prescription_status == "Pending Approval":
+            continue
+        if order.prescription_status == "Rejected":
+            continue
+
+        hours_old = (now - order.created_at).total_seconds() / 3600
+        if hours_old < 2:
+            new_stage = "Placed"
+        elif hours_old < 8:
+            new_stage = "Processing"
+        elif hours_old < 24:
+            new_stage = "Shipped"
+        elif hours_old < 48:
+            new_stage = "Out for Delivery"
+        else:
+            new_stage = "Delivered"
+
+        if order.delivery_stage != new_stage:
+            order.delivery_stage = new_stage
+            changed = True
+    if changed:
+        db.commit()
+
 
 router = APIRouter(prefix="/api/orders", tags=["orders"])
 
@@ -16,6 +60,14 @@ def create_order(req: OrderCreate, user=Depends(get_current_user), db: Session =
     if not cart_items:
         raise HTTPException(status_code=400, detail="Cart is empty")
 
+    # Validate prescription is not expired (15-day validity)
+    if req.prescription_id:
+        presc = db.query(Prescription).filter(Prescription.id == req.prescription_id).first()
+        if presc and presc.uploaded_at:
+            age_days = (datetime.utcnow() - presc.uploaded_at).days
+            if age_days > 15:
+                raise HTTPException(status_code=400, detail="Prescription has expired (older than 15 days). Please upload a new one.")
+
     item_total = 0.0
     needs_prescription = False
     order_items = []
@@ -23,6 +75,11 @@ def create_order(req: OrderCreate, user=Depends(get_current_user), db: Session =
     for ci in cart_items:
         med = db.query(Medicine).filter(Medicine.id == ci.medicine_id).first()
         if med:
+            if med.quantity < ci.quantity:
+                raise HTTPException(
+                    status_code=400,
+                    detail=f"Not enough stock for {med.name}. Available: {med.quantity}, Requested: {ci.quantity}"
+                )
             price = med.mrp * ci.quantity
             item_total += price
             if med.requires_prescription:
@@ -35,7 +92,7 @@ def create_order(req: OrderCreate, user=Depends(get_current_user), db: Session =
                 quantity=ci.quantity,
                 price=price,
             ))
-            med.quantity = max(0, med.quantity - ci.quantity)
+            med.quantity -= ci.quantity
 
     handling = 10.0
     discount = 50.0
@@ -74,6 +131,11 @@ def create_order(req: OrderCreate, user=Depends(get_current_user), db: Session =
     )
     db.add(transaction)
 
+    if req.prescription_id:
+        presc = db.query(Prescription).filter(Prescription.id == req.prescription_id).first()
+        if presc:
+            presc.order_id = order.id
+
     db.query(CartItem).filter(CartItem.user_id == user.id).delete()
     db.commit()
     db.refresh(order)
@@ -83,7 +145,10 @@ def create_order(req: OrderCreate, user=Depends(get_current_user), db: Session =
 
 @router.get("/my", response_model=list[OrderResponse])
 def get_my_orders(user=Depends(get_current_user), db: Session = Depends(get_db)):
-    orders = db.query(Order).filter(Order.user_id == user.id).order_by(Order.created_at.desc()).all()
+    orders = db.query(Order).options(
+        joinedload(Order.items).joinedload(OrderItem.medicine).joinedload(Medicine.pharmacist)
+    ).filter(Order.user_id == user.id).order_by(Order.created_at.desc()).all()
+    _auto_progress_delivery(orders, db)
     return [_order_to_response(o, user) for o in orders]
 
 
@@ -91,7 +156,11 @@ def get_my_orders(user=Depends(get_current_user), db: Session = Depends(get_db))
 def get_all_orders(user=Depends(get_current_user), db: Session = Depends(get_db)):
     if user.role != "pharmacist":
         raise HTTPException(status_code=403, detail="Not authorized")
-    orders = db.query(Order).order_by(Order.created_at.desc()).all()
+    order_ids_sq = _pharmacist_order_ids(db, user.id)
+    orders = db.query(Order).options(
+        joinedload(Order.items).joinedload(OrderItem.medicine).joinedload(Medicine.pharmacist)
+    ).filter(Order.id.in_(order_ids_sq)).order_by(Order.created_at.desc()).all()
+    _auto_progress_delivery(orders, db)
     result = []
     for o in orders:
         customer = db.query(User).filter(User.id == o.user_id).first()
@@ -106,6 +175,11 @@ def approve_order(order_id: int, user=Depends(get_current_user), db: Session = D
     order = db.query(Order).filter(Order.id == order_id).first()
     if not order:
         raise HTTPException(status_code=404, detail="Order not found")
+    has_items = db.query(OrderItem).join(Medicine).filter(
+        OrderItem.order_id == order_id, Medicine.pharmacist_id == user.id
+    ).first()
+    if not has_items:
+        raise HTTPException(status_code=403, detail="Not your order")
     order.prescription_status = "Approved"
     order.delivery_stage = "Processing"
     db.commit()
@@ -119,6 +193,11 @@ def deny_order(order_id: int, user=Depends(get_current_user), db: Session = Depe
     order = db.query(Order).filter(Order.id == order_id).first()
     if not order:
         raise HTTPException(status_code=404, detail="Order not found")
+    has_items = db.query(OrderItem).join(Medicine).filter(
+        OrderItem.order_id == order_id, Medicine.pharmacist_id == user.id
+    ).first()
+    if not has_items:
+        raise HTTPException(status_code=403, detail="Not your order")
     order.prescription_status = "Rejected"
     order.delivery_stage = "Cancelled"
     db.commit()
@@ -126,6 +205,20 @@ def deny_order(order_id: int, user=Depends(get_current_user), db: Session = Depe
 
 
 def _order_to_response(order: Order, user) -> OrderResponse:
+    items = []
+    for i in order.items:
+        pharmacy_name = ""
+        if i.medicine and i.medicine.pharmacist and i.medicine.pharmacist.pharmacy_name:
+            pharmacy_name = i.medicine.pharmacist.pharmacy_name
+        items.append(OrderItemResponse(
+            id=i.id,
+            medicine_name=i.medicine_name,
+            medicine_brand=i.medicine_brand,
+            medicine_category=i.medicine_category,
+            quantity=i.quantity,
+            price=i.price,
+            pharmacy_name=pharmacy_name,
+        ))
     return OrderResponse(
         id=order.id,
         user_id=order.user_id,
@@ -141,17 +234,9 @@ def _order_to_response(order: Order, user) -> OrderResponse:
         prescription_status=order.prescription_status,
         delivery_stage=order.delivery_stage,
         created_at=order.created_at,
-        items=[OrderItemResponse(
-            id=i.id,
-            medicine_name=i.medicine_name,
-            medicine_brand=i.medicine_brand,
-            medicine_category=i.medicine_category,
-            quantity=i.quantity,
-            price=i.price,
-        ) for i in order.items],
+        items=items,
         customer_name=user.name or user.username if user else "",
         customer_phone=user.mobile if user else "",
     )
 
 
-from ..schemas import OrderItemResponse
